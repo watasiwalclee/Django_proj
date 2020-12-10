@@ -1,0 +1,214 @@
+{% extends 'element/base.html' %}
+{% load static %}
+
+{% block ext_src %}
+<title>Adminty - Premium Admin Template by Colorlib </title>
+<!-- HTML5 Shim and Respond.js IE10 support of HTML5 elements and media queries -->
+<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+<!--[if lt IE 10]>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+<!-- Meta -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="description" content="#">
+<meta name="keywords" content="Admin , Responsive, Landing, Bootstrap, App, Template, Mobile, iOS, Android, apple, creative app">
+<meta name="author" content="#">
+<!-- Favicon icon -->
+<link rel="icon" href={% static "files\assets\images\favicon.ico" type="image/x-icon" %}>
+<!-- Google font-->
+<link href="https://fonts.googleapis.com/css?family=Open+Sans:400,600,800" rel="stylesheet">
+<!-- Required Fremwork -->
+<link rel="stylesheet" type="text/css" href={% static "files\bower_components\bootstrap\css\bootstrap.min.css" %}>
+<!-- themify-icons line icon -->
+<link rel="stylesheet" type="text/css" href={% static "files\assets\icon\themify-icons\themify-icons.css" %}>
+<!-- ico font -->
+<link rel="stylesheet" type="text/css" href={% static "files\assets\icon\icofont\css\icofont.css" %}>
+<!-- feather Awesome -->
+<link rel="stylesheet" type="text/css" href={% static "files\assets\icon\feather\css\feather.css" %}>
+<!-- Style.css -->
+<link rel="stylesheet" type="text/css" href={% static "files\assets\css\style.css" %}>
+<link rel="stylesheet" type="text/css" href={% static "files\assets\css\jquery.mCustomScrollbar.css" %}>
+
+<!-- notify js Fremwork -->
+<link rel="stylesheet" type="text/css" href={% static "files\bower_components\pnotify\css\pnotify.css" %}>
+<link rel="stylesheet" type="text/css" href={% static "files\bower_components\pnotify\css\pnotify.brighttheme.css" %}>
+<link rel="stylesheet" type="text/css" href={% static "files\bower_components\pnotify\css\pnotify.buttons.css" %}>
+<link rel="stylesheet" type="text/css" href={% static "files\bower_components\pnotify\css\pnotify.history.css" %}>
+<link rel="stylesheet" type="text/css" href={% static "files\bower_components\pnotify\css\pnotify.mobile.css" %}>
+<link rel="stylesheet" type="text/css" href={% static "files\assets\pages\pnotify\notify.css" %}>
+
+{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h2>{{ member.name }}的出刀狀態</h2>
+    </div>
+    <div class="card-block">
+        <form id="checkdrop" action="{% url 'mainfeatures:info' member.id %}" method="post" >
+            {% csrf_token %}
+            <div class="form-group row">
+                <label class="col-sm-2">當前狀態</label>
+                <div class="col-sm-10">
+                    <div class="checkbox-fade fade-in-primary">
+                        <label>
+                            {% if member.in_battle %}
+                                <input type="checkbox" id="checkbox" name="in_battle" value=True checked>
+                            {% else %}
+                                <input type="checkbox" id="checkbox" name="in_battle" value=True>
+                            {% endif %}
+                            <span class="cr">
+                        <i class="cr-icon icofont icofont-ui-check txt-primary"></i>
+                        </span>
+                            <span>出刀中</span>
+                        </label>
+                    </div>
+                    <div class="checkbox-fade fade-in-primary">
+                        <label>
+                            {% if member.compensate %}
+                                <input type="checkbox" id="checkbox2" name="compensate" value=True checked>
+                            {% else %}
+                                <input type="checkbox" id="checkbox2" name="compensate" value=True>
+                            {% endif %}
+                            <span class="cr">
+                        <i class="cr-icon icofont icofont-ui-check txt-primary"></i>
+                        </span>
+                            <span>補償狀態</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-group row">
+                <label class="col-sm-3"><h3>出刀紀錄</h3></label>
+            </div>
+
+            {% for record in records %}
+                <div class="form-group row">
+                    <label class="col-sm-1 col-form-label">第{{ forloop.counter }}刀</label>
+                    <label class="col-sm-0 col-form-label">週目:</label>
+                    <div class="col-sm-1">
+                        <input type="text" class="form-control" name="week{{ forloop.counter }}" value={{ record.0.week }}>
+                    </div>
+                    
+                    <div class="col-sm-1">
+                        <input type="text" class="form-control" name="num{{ forloop.counter }}" value={{ record.0.num }}>
+                    </div>
+                    <label class="col-sm-1 col-form-label">王</label>
+
+                    <label class="col-sm-0 col-form-label">傷害</label>
+                    <div class="col-sm-2">
+                        <input type="text" class="form-control" name="dmg{{ forloop.counter }}" value={{ record.0.dmg }}>
+                    </div>
+
+                    <div class="col-sm-2">
+                        <div class="checkbox-fade fade-in-primary">
+                            <label>
+                                {% if record.0.ending %}
+                                    <input type="checkbox" id="end{{ forloop.counter }}" name="check_end{{ forloop.counter }}" onchange="dispalyend(this)" checked>
+                                {% else %}
+                                    <input type="checkbox" id="end{{ forloop.counter }}" name="check_end{{ forloop.counter }}" onchange="dispalyend(this)">
+                                {% endif %}
+                                
+                                <span class="cr">
+                                <i class="cr-icon icofont icofont-ui-check txt-primary"></i>
+                                </span>
+                                    <span>收尾</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                {% comment  %} 補償部分 {% endcomment %}
+
+                {% if record.0.ending %}
+                    <div class="form-group row" style="" id="end{{ forloop.counter }}info">
+                {% else %}
+                    <div class="form-group row" style="display:none" id="end{{ forloop.counter }}info">
+                {% endif %}
+                
+                    <label class="col-sm-2 col-form-label">來自第{{ forloop.counter }}刀補償</label>
+                    <label class="col-sm-0 col-form-label">週目:</label>
+                    <div class="col-sm-1">
+                        <input type="text" class="form-control" name="week{{ forloop.counter }}compensate" value={{ record.1.week }}>
+                    </div>
+                    
+                    <div class="col-sm-1">
+                        <input type="text" class="form-control" name="num{{ forloop.counter }}compensate" value={{ record.1.num }}>
+                    </div>
+                    <label class="col-sm-1 col-form-label">王</label>
+
+                    <label class="col-sm-0 col-form-label">傷害</label>
+                    <div class="col-sm-2">
+                        <input type="text" class="form-control" name="dmg{{ forloop.counter }}compensate" value={{ record.1.dmg }}>
+                    </div>
+                </div>
+            {% endfor %}                          
+
+            <div class="row">
+                <div class="col-sm-10">
+                    <button type="submit" class="btn btn-primary m-b-0 ">提交</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock  %}
+
+{% block ext_src_foot %}
+<!-- Required Jquery -->
+<script type="text/javascript" src={% static 'files\bower_components\jquery\js\jquery.min.js' %}></script>
+<script type="text/javascript" src={% static 'files\bower_components\jquery-ui\js\jquery-ui.min.js' %}></script>
+<script type="text/javascript" src={% static 'files\bower_components\popper.js\js\popper.min.js' %}></script>
+<script type="text/javascript" src={% static 'files\bower_components\bootstrap\js\bootstrap.min.js' %}></script>
+<!-- jquery slimscroll js -->
+<script type="text/javascript" src={% static 'files\bower_components\jquery-slimscroll\js\jquery.slimscroll.js' %}></script>
+<!-- modernizr js -->
+<script type="text/javascript" src={% static 'files\bower_components\modernizr\js\modernizr.js' %}></script>
+<script type="text/javascript" src={% static 'files\bower_components\modernizr\js\css-scrollbars.js' %}></script>
+
+<!-- Validation js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.6/moment.min.js"></script>
+<script type="text/javascript" src={% static 'files\assets\pages\form-validation\validate.js' %}></script>
+
+<!-- pnotify js -->
+<script type="text/javascript" src={% static 'files\bower_components\pnotify\js\pnotify.js' %}></script>
+<script type="text/javascript" src={% static 'files\bower_components\pnotify\js\pnotify.desktop.js' %}></script>
+<script type="text/javascript" src={% static 'files\bower_components\pnotify\js\pnotify.buttons.js' %}></script>
+<script type="text/javascript" src={% static 'files\bower_components\pnotify\js\pnotify.confirm.js' %}></script>
+<script type="text/javascript" src={% static 'files\bower_components\pnotify\js\pnotify.callbacks.js' %}></script>
+<script type="text/javascript" src={% static 'files\bower_components\pnotify\js\pnotify.animate.js' %}></script>
+<script type="text/javascript" src={% static 'files\bower_components\pnotify\js\pnotify.history.js' %}></script>
+<script type="text/javascript" src={% static 'files\bower_components\pnotify\js\pnotify.mobile.js' %}></script>
+<script type="text/javascript" src={% static 'files\bower_components\pnotify\js\pnotify.nonblock.js' %}></script>
+<script type="text/javascript" src={% static 'files\assets\pages\pnotify\notify.js' %}></script>
+
+<!-- i18next.min.js -->
+<script type="text/javascript" src={% static 'files\bower_components\i18next\js\i18next.min.js' %}></script>
+<script type="text/javascript" src={% static 'files\bower_components\i18next-xhr-backend\js\i18nextXHRBackend.min.js' %}></script>
+<script type="text/javascript" src={% static 'files\bower_components\i18next-browser-languagedetector\js\i18nextBrowserLanguageDetector.min.js' %}></script>
+<script type="text/javascript" src={% static 'files\bower_components\jquery-i18next\js\jquery-i18next.min.js' %}></script>
+
+<!-- Custom js -->
+<script type="text/javascript" src={% static 'files\assets\pages\form-validation\form-validation.js' %}></script>
+<script src={% static 'files\assets\js\pcoded.min.js' %}></script>
+<script src={% static 'files\assets\js\vartical-layout.min.js' %}></script>
+<script src={% static 'files\assets\js\jquery.mCustomScrollbar.concat.min.js' %}></script>
+<script type="text/javascript" src={% static 'files\assets\js\script.js' %}></script> 
+
+<script>
+function dispalyend(obj){
+    var info_id = obj.id + 'info'
+    if (obj.checked == true){
+        document.getElementById(info_id).style = ''
+    }else{
+        document.getElementById(info_id).style = 'display:none'
+    }
+}
+
+</script>
+{% endblock %}
